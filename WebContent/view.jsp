@@ -116,7 +116,7 @@
 					<tbody>
 						<tr>
 							<td style = "width : 20%;"> Title</td>							
-							<td colspan = "2"> <%= bbs.getBbsTitle() %></td>
+							<td colspan = "2"> <%= bbs.getBbsTitle().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>") %></td>
 						</tr>
 						<tr>
 							<td> Writer </td>							
@@ -128,7 +128,7 @@
 						</tr>
 						<tr>
 							<td> Content </td>							
-							<td colspan = "2" style="min-height :200px; text-align: left"><%= bbs.getBbsContent() %></td>
+							<td colspan = "2" style="min-height :200px; text-align: left"><%= bbs.getBbsContent().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>") %></td>
 						</tr>
 					</tbody>
 				</table>
