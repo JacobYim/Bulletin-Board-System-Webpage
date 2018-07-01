@@ -1,10 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import = "java.io.PrintWriter" %>
-<%@ page import = "bbs.BbsDAO" %>
-<%@ page import = "bbs.Bbs" %>
-<%@ page import = "java.util.ArrayList" %>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,15 +10,6 @@
 <link rel = "stylesheet" href ="css/bootstrap.css">
 
 <title>JSP Notice Board Webpage</title>
-
-<!-- hyperlink text change to black (normal style) -->
-<style type = "text/css">
-	a, a:hover{
-		color : #000000;
-		text-decoration: none;
-	}
-</style>
-
 </head>
 
 <body>
@@ -32,10 +19,7 @@
 	if (session.getAttribute("userID") != null){
 		userID = (String) session.getAttribute("userID");
 	}
-	int pageNumber = 1;
-	if (request.getParameter("pageNumber") != null){
-		pageNumber = Integer.parseInt(request.getParameter("pageNumber"));
-	}
+	
 %>
 
 <!-- add navigation, which makes see the structure of webpage  -->
@@ -108,47 +92,24 @@
 	
 	<div class = "container">
 		<div class = "row">
-			<table class = "table table-striped" style = "text-align : center; border : 1px solid #dddddd">
-				<thead>
-					<tr>
-						<th style = "background-color : #eeeeee; text-align : center;"> Number </th>
-						<th style = "background-color : #eeeeee; text-align : center;"> Title </th>
-						<th style = "background-color : #eeeeee; text-align : center;"> Author </th>
-						<th style = "background-color : #eeeeee; text-align : center;"> Date </th>
-					</tr>
-				</thead>
-				<tbody>
-					<%
-						BbsDAO bbsDAO = new BbsDAO();
-						ArrayList<Bbs> list = bbsDAO.getList(pageNumber);
-						for (int i = 0 ; i < list.size(); i++){
-							
-					%>
-					<tr>
-						<td><%= list.get(i).getBbsID() %></td>
-						<td><a href = "view.jsp?bbsID = <%= list.get(i).getBbsID() %>"><%= list.get(i).getBbsTitle()%></a></td>
-						<td><%= list.get(i).getUserID() %></td>
-						<td><%= list.get(i).getBbsData().substring(0,11)+" "+list.get(i).getBbsData().substring(11,13)+" : "+ list.get(i).getBbsData().substring(14,16)%></td>
-					</tr>
-					<% 
-						}
-					%>
-				</tbody>
-			</table>
-			
-			<!-- when number of post is over 10, make next button to see the next 10 posts -->
-			<%
-				if (pageNumber != 1){
-			%> 
-				<a href = "bbs.jsp?pageNumber=<%=pageNumber-1%>" class="btn btn-success btn-arrow-Left">Previous</a>
-			<%
-				}if (bbsDAO.nextPage(pageNumber + 1)){
-			%> 
-				<a href = "bbs.jsp?pageNumber=<%=pageNumber+1%>" class="btn btn-success btn-arrow-Left">Next</a>
-			<%
-				}
-			%>
-			<a href = "write.jsp" class = "btn btn-primary pull-right"> Write </a>
+			<form method = "post" action = "writeAction.jsp">
+				<table class = "table table-striped" style = "text-align : center; border : 1px solid #dddddd">
+					<thead>
+						<tr>
+							<th colspan = "2" style = "background-color : #eeeeee; text-align : center;"> Board Write Format </th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td> <input type = "text" class = "form-control" placeholder = "Title" name = "bbsTitle" maxlength = "50"></td>
+						</tr>
+						<tr>
+							<td> <textarea class = "form-control" placeholder = "Content" name = "bbsContent" maxlength = "2048" style = "height: 350px;"></textarea></td>
+						</tr>
+					</tbody>
+				</table>
+				<input type = "submit" class = "btn btn-primary pull-right" value ="Write">
+			</form>
 		</div>
 	</div>
 		
