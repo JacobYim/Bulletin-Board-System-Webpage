@@ -1,8 +1,9 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" 
+	pageEncoding="UTF-8" %>
 <%@ page import = "java.io.PrintWriter" %>
 <%@ page import = "bbs.Bbs" %>
 <%@ page import = "bbs.BbsDAO" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,8 +22,15 @@
 	if (session.getAttribute("userID") != null){
 		userID = (String) session.getAttribute("userID");
 	}
+	if (userID == null){
+		PrintWriter script = response.getWriter();
+		script.println("<script>");
+		script.println("alert('Please Do login')");
+		script.println("location.href = 'login.jsp'");
+		script.println("</script>");
+	}
 	
-	// setup for the variables
+	// id and session valiation check
 	int bbsID = 0;
 	if (request.getParameter("bbsID") != null){						// if there is the parameter which named as "bbsID",
 		bbsID = Integer.parseInt(request.getParameter("bbsID"));
@@ -35,6 +43,13 @@
 		script.println("</script>");
 	}
 	Bbs bbs = new BbsDAO().getBbs(bbsID);
+	if (!userID.equals(bbs.getUserID())){
+		PrintWriter script = response.getWriter();
+		script.println("<script>");
+		script.println("alert('No Athorization')");
+		script.println("location.href = 'bbs.jsp'");
+		script.println("</script>");
+	}
 %>
 
 <!-- add navigation, which makes see the structure of webpage  -->
@@ -60,29 +75,7 @@
 				<li><a href = "bbs.jsp">Notice Board</a></li>
 			</ul>
 			
-<!-- make the connect option is available for only people does not have session -->
-			<% 
-				if (userID == null){
-			%>
-			
-			<ul class = "nav navbar-nav navbar-right">
-				<li class = "dropdown">
-				
-<!-- login and register parts -->
-				
-					<a href = "#" class = "dropdown-toggle"
-						data-toggle="dropdown" role = "botton" aria-haspopup="true"
-						aria-expanded="false"> Connect <span class = "caret"></span></a>
-					<ul class = "dropdown-menu">
-						<li><a href = login.jsp>Login</a></li>
-						<li><a href = "join.jsp">Join</a></li>
-					</ul>
-				</li>
-			</ul>
-				
-			<%		
-				}else{
-			%>
+
 			<ul class = "nav navbar-nav navbar-right">
 				<li class = "dropdown">
 				
@@ -96,9 +89,6 @@
 					</ul>
 				</li>
 			</ul>	
-			<%
-				}
-			%>
 
 		</div>
 	</nav>
@@ -107,40 +97,24 @@
 	
 	<div class = "container">
 		<div class = "row">
+			<form method = "post" action = "updateAction.jsp?bbsID=<%=bbsID %>">
 				<table class = "table table-striped" style = "text-align : center; border : 1px solid #dddddd">
 					<thead>
 						<tr>
-							<th colspan = "3" style = "background-color : #eeeeee; text-align : center;"> View Board Contents </th>
+							<th colspan = "2" style = "background-color : #eeeeee; text-align : center;"> Board Edit Format </th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td style = "width : 20%;"> Title</td>							
-							<td colspan = "2"> <%= bbs.getBbsTitle().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>") %></td>
+							<td> <input type = "text" class = "form-control" placeholder = "Title" name = "bbsTitle" maxlength = "50" value = "<%= bbs.getBbsTitle() %>"></td>
 						</tr>
 						<tr>
-							<td> Writer </td>							
-							<td colspan = "2"> <%= bbs.getUserID() %></td>
-						</tr>
-						<tr>
-							<td> Date </td>							
-							<td colspan = "2"> <%= bbs.getBbsDate().substring(0,11) + bbs.getBbsDate().substring(11,13)+":"+bbs.getBbsDate().substring(14,16) %></td>
-						</tr>
-						<tr>
-							<td> Content </td>							
-							<td colspan = "2" style="min-height :200px; text-align: left"><%= bbs.getBbsContent().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>") %></td>
+							<td> <textarea class = "form-control" placeholder = "Content" name = "bbsContent" maxlength = "2048" style = "height: 350px;"> <%= bbs.getBbsContent() %> </textarea></td>
 						</tr>
 					</tbody>
 				</table>
-				<a href = "bbs.jsp" class="btn btn-primary"> List </a>
-				<% 
-					if (userID != null && userID.equals(bbs.getUserID())){
-				%>
-					<a href = "update.jsp?bbsID=<%= bbsID%>" class = "btn btn-primary"> Modify</a>
-					<a onclick = "return confirm('Do you want to delete this content?')"href = "deleteAction.jsp?bbsID=<%= bbsID%>" class = "btn btn-primary"> Delete</a>
-				<%		
-					}
-				%>
+				<input type = "submit" class = "btn btn-primary pull-right" value ="Edit">
+			</form>
 		</div>
 	</div>
 		
